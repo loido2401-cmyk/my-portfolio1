@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đèn Kéo Quân 3D</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #111;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        h1 {
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            font-size: 24px;
+            text-align: center;
+        }
+
+        /* Khung chứa không gian 3D */
+        .scene {
+            width: 300px;
+            height: 200px;
+            perspective: 1000px; /* Tạo độ sâu 3D */
+            margin-bottom: 50px;
+        }
+
+        /* Lồng đèn kéo quân */
+        .carousel {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 0.2s linear; /* Mượt mà khi xoay */
+        }
+
+        /* Định dạng chung cho 6 mặt */
+        .carousel-face {
+            position: absolute;
+            width: 280px;
+            height: 180px;
+            left: 10px;
+            top: 10px;
+            border: 5px solid #ffcc00;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.6);
+            background-color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        /* Hiệu ứng phát sáng mạnh hơn khi di chuột vào mặt ảnh */
+        .carousel-face:hover {
+            box-shadow: 0 0 30px rgba(255, 204, 0, 1);
+            border-color: #fff;
+        }
+
+        .carousel-face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 
+           Sắp xếp 6 mặt thành hình lục giác đều trong không gian 3D.
+           Khoảng cách dịch chuyển (translateZ) tính bằng công thức hình học:
+           r = (độ rộng / 2) / tan(180 độ / số mặt)
+           Với width = 300px, 6 mặt -> r ≈ 260px.
+        */
+        .face-1 { transform: rotateY(0deg) translateZ(260px); }
+        .face-2 { transform: rotateY(60deg) translateZ(260px); }
+        .face-3 { transform: rotateY(120deg) translateZ(260px); }
+        .face-4 { transform: rotateY(180deg) translateZ(260px); }
+.face-5 { transform: rotateY(240deg) translateZ(260px); }
+        .face-6 { transform: rotateY(300deg) translateZ(260px); }
+
+        /* Hướng dẫn sử dụng */
+        .instruction {
+            font-size: 14px;
+            color: #aaa;
+            border: 1px dashed #444;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Mô phỏng Đèn Kéo Quân 3D</h1>
+
+    <div class="scene">
+        <div class="carousel" id="carousel">
+            <!-- Mặt 1 -->
+            <div class="carousel-face face-1">
+                <img src="https://picsum.photos/400/300?random=1" alt="Ảnh 1">
+            </div>
+            <!-- Mặt 2 -->
+            <div class="carousel-face face-2">
+                <img src="https://picsum.photos/400/300?random=2" alt="Ảnh 2">
+            </div>
+            <!-- Mặt 3 -->
+            <div class="carousel-face face-3">
+                <img src="https://picsum.photos/400/300?random=3" alt="Ảnh 3">
+            </div>
+            <!-- Mặt 4 -->
+            <div class="carousel-face face-4">
+                <img src="https://picsum.photos/400/300?random=4" alt="Ảnh 4">
+            </div>
+            <!-- Mặt 5 -->
+            <div class="carousel-face face-5">
+                <img src="https://picsum.photos/400/300?random=5" alt="Ảnh 5">
+            </div>
+            <!-- Mặt 6 -->
+            <div class="carousel-face face-6">
+                <img src="https://picsum.photos/400/300?random=6" alt="Ảnh 6">
+            </div>
+        </div>
+    </div>
+
+    <div class="instruction">
+        💡 Rê chuột vào một bức ảnh để dừng đèn. Rê chuột ra ngoài để đèn tiếp tục quay.
+    </div>
+
+    <script>
+        const carousel = document.getElementById('carousel');
+        let angle = 0;
+        let isSpinning = true;
+        let animationFrameId;
+
+        // Hàm cập nhật chuyển động xoay tròn tự động
+        function spin() {
+            if (isSpinning) {
+                angle -= 0.3; // Tốc độ xoay (giá trị âm quay theo chiều kim đồng hồ)
+                carousel.style.transform = `rotateY(${angle}deg)`;
+            }
+            animationFrameId = requestAnimationFrame(spin);
+        }
+
+        // Bắt đầu chạy hiệu ứng quay
+        spin();
+
+        // Lắng nghe sự kiện di chuột trên toàn bộ lồng đèn
+        carousel.addEventListener('mouseenter', () => {
+            isSpinning = false;
+        });
+
+        carousel.addEventListener('mouseleave', () => {
+            isSpinning = true;
+        });
+    </script>
+</body>
+</html>
